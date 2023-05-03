@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-spc
+spec:
+  minReadySeconds: 2
+  replicas: 3
+  selector:
+    matchLabels:
+      app: spc
+  template:
+    metadata:
+      name: spc-pod
+      labels: 
+        app: spc
+    spec:
+      containers:
+        - name: spc-cntr
+          image: srikanthvelma/spc:v1.0
+          ports:
+            - containerPort: 8080

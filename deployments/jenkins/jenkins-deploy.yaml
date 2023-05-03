@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-deploy
+spec:                   # deploy spec
+  minReadySeconds: 3
+  replicas: 8
+  selector:
+    matchLabels:
+      app: jenkins
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 50%
+  template:
+    metadata:          # pod metada
+      name: jenkins-pod
+      labels:
+        app: jenkins
+        version: "2.3"
+    spec:             # pod spec
+      containers:
+        - name: jenkins-ctnr
+          image: jenkins/jenkins:lts-jdk11
+          ports:
+            - containerPort: 8080

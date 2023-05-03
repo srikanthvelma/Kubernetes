@@ -1,0 +1,21 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: 
+  name: spccronjob
+spec:
+  schedule: '* * * * *'
+  jobTemplate:
+    metadata: 
+      name: spcjob
+    spec:
+      template:
+        metadata:
+          name: spc-pod
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: spc-cntr
+              image: srikanthvelma/spc:v1.0
+              ports:
+                - containerPort: 8080 

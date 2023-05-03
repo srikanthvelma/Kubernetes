@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine-pod
+spec:
+  containers:
+    - name: alpine-ctnr
+      image: alpine
+      command:
+        - sleep
+        - 1d

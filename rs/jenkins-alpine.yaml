@@ -13,6 +13,11 @@ spec:
       name: jenkins-pod
       containers:
         - name: jenkins
-          image: jenkins/jenkins
+          image: jenkins/jenkins:lts-jdk11
           ports:
             - containerPort: 8080
+        - name: alpine
+          image: alpine:3
+          args:
+            - sleep
+            - 1d

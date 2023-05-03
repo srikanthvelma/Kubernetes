@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata: 
+  name:            # RS name
+  labels:          # labels for RS
+spec:              # RS spec
+  minReadySeconds:
+  replicas:
+  selector:        # we can use 2 types - equality and set based
+    matchExpressions:    # set based
+      - key:
+        operator:
+        values:
+    # we can equality based
+    matchLabels:
+      app: nginx          # we can write any key value pair
+  template:               # pod template
+    metadata:             # pod metadata
+      name:               # pod name
+      labels:             # labels for pod
+        app: nginx        # examples key value pair
+    spec:                 # pod spec
+      containers:
+        - name:           # container name
+          image:          
+          ports:
+            - containerPort:      # application port
+
+      
