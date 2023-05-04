@@ -165,7 +165,122 @@ spec:              # RS spec
           ports:
             - containerPort:      # application port
 ```
+### Labels and Selector 
+* labels are key value pairs assigned as metadata to objects for indetification
+* labels are key value pairs assigned to the objects such as pods
+* Labels are intended to be used to specify identifying attributes of objects that are meaningful and relevant to users, but do not directly imply semantics to the core system
+* Labels can be used to organize and to select subsets of objects.
+* Labels can be attached to objects at creation time and subsequently added and modified at any time.
+*  Each object can have a set of key/value labels defined. Each Key must be unique for a given object.
+```yaml
+metadata: 
+  labels: 
+    key1 : value1
+    key2 : value2
+```
+* via `label selctor` the client /user can identify set of objects
+* 2 types of label selectors
+  * equality based
+    * equals
+    * not equals
+  ```yaml
+    environment = production
+    tier != frontend
+  ```
+  * set based
+    * in
+    * not in
+    * exists
+  ```yaml
+    environment in (production, qa)
+    tier notin (frontend, backend)
+    partition
+    !partition
+  ```
+### Annotations
+* Annotations are used to attach arbitrary non identifying metadata to objects
+* clents such tools and libraries can retrieve this data
+* Labels can be used to select objects and to find collections of objects that satisfy certain conditions. In contrast, annotations are not used to identify and select objects. 
+* The metadata in an annotation can be small or large, structured or unstructured, and can include characters not permitted by labels.
+* Ex: time stamps,release ids,git branch,image hashes,image registry 
+```yaml
+metadata:
+  name: annotations-demo
+  annotations:
+    imageregistry: "https://hub.docker.com/"
+```
+### k8s as a service
+* Every cloud providers offers k8s as aservice
+* AKS,EKS,GKE
+* K8s as a service basically means the master nodes will be managed by cloud provider
+* less admin.nodes can be scaled
+### Service
+* In Kubernetes, a Service is a method for exposing a network application that is running as one or more Pods in your cluster.
+* generally in k8s every pod will get unique ip & name
+* so in k8s deployments pods will be created and deleted dynamically
+* so connecting to pods using their name/ip is not sensible
+* so here service will come into play
+* service is k8s object will get unique ip address which is virtual ip which helps in forwarding traffic from one pod to another
+* service basically works by using label and label selectors
+* by using service we can expose the pods `internally` and `externally`
+* Fields used in service are
+  * selector and ports in service spec
+  * which are already defined in pod spec and metadata
+  * `labels in pod` - `selector in svc`
+  * `port in pod` - `target port in svc`
+  * Field `type` is used define for type od communication - `internal or external`
+  * for Internal - `ClusterIP` 
+  * for External - `LoadBalancer`
+  * and field `ClusterIp - None` is used for `Headless Service`
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app.kubernetes.io/name: proxy
+spec:
+  containers:
+  - name: nginx
+    image: nginx:stable
+    ports:
+      - containerPort: 80
+        name: http-web-svc
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app.kubernetes.io/name: proxy
+  type: ClusterIP
+  ports:
+  - name: name-of-service-port
+    protocol: TCP
+    port: 80
+    targetPort: 8080
+``` 
+* `ingress` is also kind of service in k8s runs on HTTP protocal
+### Health checks/Probes for containers in k8s pods
+* k8s supports 3 kinds of checks
+#### liveness probe
+* if this check fails kubelet will restart the container.
+* The kubelet uses liveness probes to know when to restart a container
+#### readyness probe
+* The kubelet uses readiness probes to know when a container is ready to start accepting traffic.
+* if this check fails the pod will be removed from service (pod will not get requests from service)
+* One use of this signal is to control which Pods are used as backends for Services. When a Pod is not ready, it is removed from Service load balancers.
+#### startup probe
+* The kubelet uses startup probes to know when a container application has started
+* after succeeding this check only, it enables liveness and readiness 
 
-
-     
+### Run pods with specific Resources - CPU /Memory
+* When you specify a Pod, you can optionally specify how much of each resource a container needs. The most common resources to specify are CPU and memory (RAM); there are others.
+* When you specify the resource request for containers in a Pod, the kube-scheduler uses this information to decide which node to place the Pod on.
+* When you specify a resource limit for a container, the kubelet enforces those limits so that the running container is not allowed to use more of that resource than the limit you set
+#### Requests and Limits
+* If the node where a Pod is running has enough of a resource available, it's possible (and allowed) for a container to use more resource than its `request` for that resource specifies   
+* a container is not allowed to use more than its resource `limit`.
+### Container types in pods 
