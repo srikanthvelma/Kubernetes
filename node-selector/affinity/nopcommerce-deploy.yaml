@@ -20,6 +20,15 @@ spec:
       labels:
         app: nop
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: nodename
+                    operator: In
+                    values: 
+                      - node1
       containers:
         - name: nop-ctnr
           image: srikanthvelma/nopcommerce:v1.0
@@ -29,6 +38,8 @@ spec:
           env:
             - name: ConnectionStrings__WebAppContext
               value: "server=mysql-svc;uid=root;pwd=rootroot;database=employees"
+            - name: MYSQL_SERVER
+              value: mysql-stateful-0.mysql-svc
           # livenessProbe:
           #   failureThreshold: 3
           #   initialDelaySeconds: 1

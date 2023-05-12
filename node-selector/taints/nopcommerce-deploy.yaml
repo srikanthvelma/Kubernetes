@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nopcommerce-deploy
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nop
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      name: nop-pod
+      labels:
+        app: nop
+    spec:
+      tolerations:
+        - key: app
+          operator: Equal
+          value: db
+          effect: NoSchedule
+      containers:
+        - name: nop-ctnr
+          image: srikanthvelma/nopcommerce:v1.0
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          env:
+            - name: ConnectionStrings__WebAppContext
+              value: "server=mysql-svc;uid=root;pwd=rootroot;database=employees"
+            - name: MYSQL_SERVER
+              value: mysql-stateful-0.mysql-svc
+            
+
+
+
+
+      

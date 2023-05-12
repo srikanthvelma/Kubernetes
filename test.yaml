@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: managed
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysqldb
+spec:
+  minReadySeconds: 1
+  serviceName: mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      db: mysql
+  template:
+    metadata:
+      name: mysqlpod
+      labels:
+        db: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: manuroot
+            - name: MYSQL_USER
+              value: gmanohar
+            - name: MYSQL_PASSWORD
+              value: manu1234
+            - name: MYSQL_DATABASE
+              value: students
+          volumeMounts:
+            - name: mysql-pvc
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-pvc
+          persistentVolumeClaim:
+            claimName: mysql-pvc1
+            readOnly: false
+  # volumeClaimTemplates:
+  #   - metadata:
+  #       name: sqlvolume
+  #     spec:
+  #       accessModes:
+  #         - ReadWriteOnce
+  #       selector:
+  #         matchLabels:
+  #           db: mysql
+  #       storageClassName: managed
+  #       resources:
+  #         requests:
+  #           storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  type: ClusterIP
+  selector:
+    db: mysql
+  ports:
+    - port: 4500
+      protocol: TCP
+      targetPort: 3306

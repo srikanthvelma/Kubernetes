@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  MYSQL_ROOT_PASSWORD: rootroot
+  MYSQL_USER: qtuser
+  MYSQL_PASSWORD: password
+  MYSQL_DB: employees

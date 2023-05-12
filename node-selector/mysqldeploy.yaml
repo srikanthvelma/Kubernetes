@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deploy
+spec:
+  minReadySeconds: 5
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      name: mysql-pod
+      labels:
+        app: mysql
+    spec:
+      nodeSelector:
+        nodename: node2
+      containers:
+        - name: mysql-ctnr
+          image: mysql:8
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: mysql-configmap
+                optional: false
+          
+          
+        
+          
+
+
+
+
+      
